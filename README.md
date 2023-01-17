@@ -24,7 +24,6 @@ import java.util.Scanner;
 
 
 public class Main extends CommandManager{
-	boolean testCommands = false, exceptionCommands = false, argumentTest = true;
 	public Main() throws CommandAlreadyRegisteredException, CommandNotFoundException, CommandAnointmentMissingException, SimpleCommandNullException, ArgumentParseException {
 		registerArgument(ArgumentEntity.class);
 		SimpleCommand argumentCommand = new ArgumentCommand();
