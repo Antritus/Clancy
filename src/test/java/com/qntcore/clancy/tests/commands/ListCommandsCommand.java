@@ -40,7 +40,7 @@ public class ListCommandsCommand implements CommandExecutor {
 	}
 
 	@Override
-	public void trigger(Entity entity, String name, List<Argument<?>> arguments) {
+	public void trigger(Entity entity, List<Argument<?>> arguments) {
 		boolean found = false;
 		List<String> args = new ArrayList<>();
 		boolean fillList = true;

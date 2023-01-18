@@ -19,7 +19,7 @@ public class CommandManager {
 	private List<Class<?>> arguments = new ArrayList<>();
 	private HashMap<Command, CommandExecutor> commandExecutors = new HashMap<>();
 
-	Comparator<Command> SortLowestHighest = new Comparator<Command>() {
+	private Comparator<Command> SortLowestHighest = new Comparator<Command>() {
 		public int compare(Command cmd1, Command cmd2) {
 			return cmd1.priority() - cmd2.priority();
 		}
@@ -40,15 +40,29 @@ public class CommandManager {
 		}
 	}
 
+	/**
+	 * Registers all simple commands in an array or listed
+	 * @param commands Simple commands to register
+	 * @throws CommandAlreadyRegisteredException A command with same name and key has been already registered
+	 * @throws SimpleCommandNullException Simple command class does not have @Command or it is a null
+	 * @throws CommandAnointmentMissingException Simple command class does not have @Command
+	 */
 	public void register(SimpleCommand... commands) throws CommandAlreadyRegisteredException, SimpleCommandNullException, CommandAnointmentMissingException {
 		for (SimpleCommand simpleCommand : commands) {
 			register(simpleCommand);
 		}
 	}
 
+	/**
+	 * Registers simple command.
+	 * @param command Simple command to register
+	 * @throws CommandAlreadyRegisteredException A command with same name and key has been already registered
+	 * @throws SimpleCommandNullException Simple command class does not have @Command or it is a null
+	 * @throws CommandAnointmentMissingException Simple command class does not have @Command
+	 */
 	public void register(SimpleCommand command) throws CommandAlreadyRegisteredException, CommandAnointmentMissingException, SimpleCommandNullException {
 		if (command == null) {
-			throw new SimpleCommandNullException();
+			throw new NullPointerException();
 		}
 		if (command.getClass().getAnnotation(Command.class) == null) {
 			if (command.getClass().getSuperclass().getAnnotation(Command.class) != null) {
@@ -74,6 +88,16 @@ public class CommandManager {
 		commandExecutors.put(anCommand, command);
 	}
 
+	/**
+	 * Register a command without using simple command.
+	 * @see SimpleCommand
+	 * @see Command
+	 * @see CommandExecutor
+	 * @param command @Command class to register
+	 * @param commandExecutor CommandExecutor of the @Command
+	 * @throws CommandAlreadyRegisteredException A command with same name and key has been already registered
+	 * @throws CommandAnointmentMissingException Command class does not have @Command
+	 */
 	public void register(Command command, CommandExecutor commandExecutor) throws CommandAlreadyRegisteredException, CommandAnointmentMissingException {
 		if (command == null) {
 			throw new CommandAnointmentMissingException(null);
@@ -93,6 +117,13 @@ public class CommandManager {
 		commands.add(command);
 		commandExecutors.put(command, commandExecutor);
 	}
+
+	/**
+	 * Registers argument class to memory, so it can be constructed when parsing arguments
+	 * @param argument Class of the argument
+	 * @throws ArgumentParseConstructorException Argument has invalid constructor (required: constructor(String.class))
+	 * @throws ArgumentParseAbstractClassException Argument is abstract class.
+	 */
 	public void registerArgument(@NotNull Class<?> argument) throws ArgumentParseConstructorException, ArgumentParseAbstractClassException {
 		if (argument.getAnnotation(CommandArgument.class) == null){
 			return;
@@ -121,27 +152,59 @@ public class CommandManager {
 		}
 	}
 
+	/**
+	 * Gets all registered commands.
+	 * @return registered commands
+	 */
 	public List<Command> commands() {
 		return commands;
 	}
 
+	/**
+	 * Gets all command executors.
+	 * @return registered command executors
+	 */
 	public HashMap<Command, CommandExecutor> executors() {
 		return commandExecutors;
 	}
+	/**
+	 * Gets all registered categories.
+	 * @return registered categories
+	 */
 
 	public List<String> getCategories() {
 		return categories;
 	}
+	/**
+	 * Gets all registered argument classes.
+	 * @return registered argument classes
+	 */
+	public List<Class<?>> arguments(){
+		return arguments;
+	}
 
+	/**
+	 * Executes a command for entity. This can be done by getting command and triggering the command.
+	 * @param entity  Entity to execute as
+	 * @param command Command to execute
+	 * @param args Arguments of command
+	 * @throws CommandNotFoundException Command has not been registered
+	 */
 	public void execute(Entity entity, Command command, List<Argument<?>> args) throws CommandNotFoundException {
 		if (command == null) {
 			throw new CommandNotFoundException((QntKey) null);
 		}
 		CommandExecutor commandExecutor = commandExecutors.get(command);
-		commandExecutor.trigger(entity, command.name(), args);
+		commandExecutor.trigger(entity, args);
 	}
 
-	public List<Command> getCommands(String... categories) throws CommandNotFoundException {
+	/**
+	 * Gets all commands in categories listed
+	 * @param categories Categories to search in
+	 * @return Commands found
+	 * @throws CommandNotFoundException No command has been created using categories listed.
+	 */
+	public @Nullable List<Command> getCommands(String... categories) throws CommandNotFoundException {
 		if (categories.length == 0) {
 			return commands();
 		} else {
@@ -163,7 +226,14 @@ public class CommandManager {
 		}
 	}
 
-	public List<Command> getCommandsByKey(String... keys) throws CommandNotFoundException {
+	/**
+	 * Gets all commands with given keys.
+	 * @note Command key is the left side of :
+	 * @param keys Keys to search for
+	 * @return Commands
+	 * @throws CommandNotFoundException No commands found using key given
+	 */
+	public @Nullable List<Command> getCommandsByKey(String... keys) throws CommandNotFoundException {
 		List<Command> commands = new ArrayList<>();
 		for (Command command : commands()) {
 			for (String key : keys) {
@@ -178,6 +248,12 @@ public class CommandManager {
 		return commands;
 	}
 
+	/**
+	 * Gets command with qntkey
+	 * @param key key to get a command for
+	 * @return Command
+	 * @throws CommandNotFoundException No command found
+	 */
 	public Command getCommand(QntKey key) throws CommandNotFoundException {
 		for (Command command : commands()) {
 			if (command.key().equalsIgnoreCase(key.getKey())) {
@@ -189,6 +265,11 @@ public class CommandManager {
 		throw new CommandNotFoundException(key);
 	}
 
+	/**
+	 * Gets command info in json format
+	 * @param command Command to convert to json
+	 * @return Json format of command
+	 */
 	public String getCommandInfo(Command command) {
 		if (command == null) {
 			return null;
@@ -200,10 +281,21 @@ public class CommandManager {
 		return "{\"key\":{\"key\":\"" + command.key() + "\",\"name\":\"" + command.name() + "\"}," + "\"category\":\"" + command.category() + "\",\"permission\":\"" + command.permission() + "\",\"usage\":\"" + command.usage() + "\"," + aliases + ",\"prefix\":\"" + command.prefix() + "\",\"priority\":" + command.priority() + "}";
 	}
 
-
+	/**
+	 * Gets command with with prefix, (key), name
+	 * @param command Command to get
+	 * @return Command found
+	 */
 	public @Nullable Command parseCommand(@NotNull String command) {
 		return parseCommand(command, false);
 	}
+
+	/**
+	 * Gets command with with prefix, (key), name
+	 * @param command Command string to get command from.
+	 * @param ignorePrefix ignore prefix?
+	 * @return Command found
+	 */
 	public @Nullable Command parseCommand(@NotNull String command, boolean ignorePrefix) {
 		List<Command> commands = new ArrayList<>();
 		for (Command cmd : commands()) {
@@ -259,6 +351,15 @@ public class CommandManager {
 		return commands.get(commands.size() - 1);
 	}
 
+
+	/**
+	 * Parses command argument so no need to parse arguments by yourself.
+	 * @param entity Entity to parse the arguments as
+	 * @param command Command
+	 * @param inArgs Arguments
+	 * @return list of new instances of arguments.
+	 * @throws ArgumentParseException Exception happened lol
+	 */
 	public List<Argument<?>> parseArgument(Entity entity, Command command, List<String> inArgs) throws ArgumentParseException {
 		ICommandArgument commandArguments = commandExecutors.get(command);
 		HashMap<Integer, Argument<?>> outArgs = new HashMap<>();
@@ -300,7 +401,18 @@ public class CommandManager {
 		}
 		return new ArrayList<>(outArgs.values());
 	}
-	private @Nullable Argument<?> parseArgument(Entity entity, Command command, HashMap<Integer, Argument<?>> outArgs, int i, String inArg, Object obj) throws ArgumentParseException {
+
+	/**
+	 * Parses command argument so no need to parse arguments by yourself.
+	 * @param entity Entity to parse the arguments as
+	 * @param command Command
+	 * @param outArgs Other arguments parsed
+	 * @param i position of the argument
+	 * @param inArg argument to parse
+	 * @param obj object to parse
+	 * @return list of new instances of arguments.
+	 * @throws ArgumentParseException Exception happened lol
+	 */	private @Nullable Argument<?> parseArgument(Entity entity, Command command, HashMap<Integer, Argument<?>> outArgs, int i, String inArg, Object obj) throws ArgumentParseException {
 		if (obj instanceof Class<?>){
 			for (Class<?> clazz : arguments) {
 				try {

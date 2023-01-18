@@ -52,7 +52,7 @@ public class ArgumentCommand extends SimpleCommand {
 	}
 
 	@Override
-	public void trigger(Entity entity, String name, List<Argument<?>> arguments) {
+	public void trigger(Entity entity, List<Argument<?>> arguments) {
 		System.out.println("Idk do something!");
 	}
 

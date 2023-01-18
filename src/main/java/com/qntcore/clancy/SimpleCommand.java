@@ -2,6 +2,7 @@ package com.qntcore.clancy;
 
 import com.qntcore.clancy.arguments.*;
 import com.qntcore.clancy.entity.Entity;
+import com.qntcore.clancy.entity.Permissionable;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -30,7 +31,10 @@ public abstract class SimpleCommand implements CommandExecutor {
 		if (permission == null){
 			return true;
 		}
-		return  entity.hasPermission(permission);
+		if (entity instanceof Permissionable){
+			((Permissionable) entity).hasPermission(permission);
+		}
+		return true;
 	}
 
 	@Override

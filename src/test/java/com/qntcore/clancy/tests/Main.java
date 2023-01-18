@@ -20,13 +20,11 @@ import com.qntcore.clancy.tests.entities.Console;
 import com.qntcore.clancy.tests.entities.EntitySuper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 
 public class Main extends CommandManager{
-	boolean testCommands = false, exceptionCommands = false, argumentTest = true;
 	private static Main instance;
 	public static Main getInstance(){
 		return instance;
@@ -40,11 +38,7 @@ public class Main extends CommandManager{
 			register(getKeyCommand);
 			CommandExecutor listCommand = new ListCommandsCommand(this);
 			register(listCommand.getClass().getAnnotation(Command.class), listCommand);
-		} catch (CommandAlreadyRegisteredException e) {
-			throw new RuntimeException(e);
-		} catch (CommandAnointmentMissingException e) {
-			throw new RuntimeException(e);
-		} catch (SimpleCommandNullException e) {
+		} catch (CommandAlreadyRegisteredException | CommandAnointmentMissingException | SimpleCommandNullException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -52,9 +46,7 @@ public class Main extends CommandManager{
 		try {
 			registerArgument(ArgumentEntity.class);
 			registerArgument(com.qntcore.clancy.tests.arguments.ArgumentCommand.class);
-		} catch (ArgumentParseConstructorException e) {
-			throw new RuntimeException(e);
-		} catch (ArgumentParseAbstractClassException e) {
+		} catch (ArgumentParseConstructorException | ArgumentParseAbstractClassException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -69,7 +61,7 @@ public class Main extends CommandManager{
 		registerArguments();
 		Scanner scanner = new Scanner(System.in);
 		String next;
-		Command command = null;
+		Command command;
 		while (true){
 			next = scanner.nextLine();
 			boolean cont = true;
@@ -112,7 +104,7 @@ public class Main extends CommandManager{
 			}
 		}
 	}
-	public static void main(String[] args) throws CommandAlreadyRegisteredException, SimpleCommandNullException, CommandAnointmentMissingException, CommandNotFoundException, ArgumentParseException {
+	public static void main(String[] args) throws CommandNotFoundException, ArgumentParseException {
 		new Main();
 	}
 }

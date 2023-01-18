@@ -25,7 +25,7 @@ public class GetKeyCommand extends SimpleCommand {
 		return args.get(0) instanceof ArgumentCommand;
 	}
 	@Override
-	public void trigger(Entity entity, String name, List<Argument<?>> arguments) {
+	public void trigger(Entity entity, List<Argument<?>> arguments) {
 		ArgumentCommand arg = (ArgumentCommand) arguments.get(0);
 		entity.sendMessage(arg.getParsed().key()+":"+arg.getParsed().name());
 	}
