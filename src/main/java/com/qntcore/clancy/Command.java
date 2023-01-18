@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command {
 	/**
-	 * The key of the command (ex: qntcore)
+	 * The key of the command (ex: qencode)
 	 * @default null
 	 * @return name of the key
 	 */

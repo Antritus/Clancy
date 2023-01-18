@@ -6,9 +6,10 @@ import com.qntcore.clancy.entity.Entity;
 import java.util.List;
 
 
+@SuppressWarnings("unused")
 public interface CommandExecutor extends ICommandArgument {
 	/**
-	 * The key of the command. (ex: qntcore:command)
+	 * The key of the command. (ex: qencode:command)
 	 * @return key of the command
 	 */
 	QntKey getKey();

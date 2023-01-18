@@ -10,7 +10,7 @@ public abstract class Argument<T> {
 
 	/**
 	 * A command argument which is used as the base of argument parsing.
-	 * A command argument saper must only have (Your Type).class as the constructor.
+	 * A command argument super must only have (Your Type).class as the constructor.
 	 * Custom command arguments must use @CommandArgument(isCustom = true) to make sure the future versions do not break.
 	 * @param argument Command argument (must be only object in child constructor)
 	 * @param classType The class of Object extended with Argument<>

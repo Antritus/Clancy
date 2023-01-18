@@ -1,13 +1,9 @@
 package com.qntcore.clancy;
 
-import com.qntcore.clancy.arguments.*;
 import com.qntcore.clancy.entity.Entity;
 import com.qntcore.clancy.entity.Permissionable;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public abstract class SimpleCommand implements CommandExecutor {
 	HashMap<Integer, Object> args = new HashMap<>();
@@ -32,7 +28,7 @@ public abstract class SimpleCommand implements CommandExecutor {
 			return true;
 		}
 		if (entity instanceof Permissionable){
-			((Permissionable) entity).hasPermission(permission);
+			return ((Permissionable) entity).hasPermission(permission);
 		}
 		return true;
 	}

@@ -13,17 +13,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+@SuppressWarnings({"unused", "typo"})
 public class CommandManager {
-	private List<Command> commands = new ArrayList<>();
-	private List<String> categories = new ArrayList<>();
-	private List<Class<?>> arguments = new ArrayList<>();
-	private HashMap<Command, CommandExecutor> commandExecutors = new HashMap<>();
+	private final List<Command> commands = new ArrayList<>();
+	private final List<String> categories = new ArrayList<>();
+	private final List<Class<?>> arguments = new ArrayList<>();
+	private final HashMap<Command, CommandExecutor> commandExecutors = new HashMap<>();
 
-	private Comparator<Command> SortLowestHighest = new Comparator<Command>() {
-		public int compare(Command cmd1, Command cmd2) {
-			return cmd1.priority() - cmd2.priority();
-		}
-	};
+	private final Comparator<Command> SortLowestHighest = Comparator.comparingInt(Command::priority);
 
 	{
 		try {
@@ -33,9 +30,7 @@ public class CommandManager {
 			registerArgument(ArgumentInteger.class);
 			registerArgument(ArgumentLong.class);
 			registerArgument(ArgumentString.class);
-		} catch (ArgumentParseConstructorException e) {
-			throw new RuntimeException(e);
-		} catch (ArgumentParseAbstractClassException e) {
+		} catch (ArgumentParseConstructorException | ArgumentParseAbstractClassException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -44,7 +39,7 @@ public class CommandManager {
 	 * Registers all simple commands in an array or listed
 	 * @param commands Simple commands to register
 	 * @throws CommandAlreadyRegisteredException A command with same name and key has been already registered
-	 * @throws SimpleCommandNullException Simple command class does not have @Command or it is a null
+	 * @throws SimpleCommandNullException Simple command class does not have @Command, or it is a null
 	 * @throws CommandAnointmentMissingException Simple command class does not have @Command
 	 */
 	public void register(SimpleCommand... commands) throws CommandAlreadyRegisteredException, SimpleCommandNullException, CommandAnointmentMissingException {
@@ -57,7 +52,7 @@ public class CommandManager {
 	 * Registers simple command.
 	 * @param command Simple command to register
 	 * @throws CommandAlreadyRegisteredException A command with same name and key has been already registered
-	 * @throws SimpleCommandNullException Simple command class does not have @Command or it is a null
+	 * @throws SimpleCommandNullException Simple command class does not have @Command, or it is a null
 	 * @throws CommandAnointmentMissingException Simple command class does not have @Command
 	 */
 	public void register(SimpleCommand command) throws CommandAlreadyRegisteredException, CommandAnointmentMissingException, SimpleCommandNullException {
@@ -192,7 +187,7 @@ public class CommandManager {
 	 */
 	public void execute(Entity entity, Command command, List<Argument<?>> args) throws CommandNotFoundException {
 		if (command == null) {
-			throw new CommandNotFoundException((QntKey) null);
+			throw new CommandNotFoundException();
 		}
 		CommandExecutor commandExecutor = commandExecutors.get(command);
 		commandExecutor.trigger(entity, args);
@@ -305,10 +300,7 @@ public class CommandManager {
 					continue;
 				}
 			}else {
-				if (!command.startsWith(prefix)) {
-					prefix = "";
-				}
-				else {
+				if (command.startsWith(prefix)) {
 					if (command.equalsIgnoreCase(cmd.prefix()+cmd.key()+":"+cmd.name())){
 						return cmd;
 					}
@@ -318,8 +310,6 @@ public class CommandManager {
 					continue;
 				}
 			}
-			// /qntcore:command
-			// /command
 			String command2 = cmd.prefix() + cmd.key() + ":" + cmd.name();
 			if (ignorePrefix){
 				if (!command.startsWith(cmd.prefix())){
@@ -397,6 +387,7 @@ public class CommandManager {
 			} else if (commandArguments.getArguments().get(i) instanceof Argument<?>){
 				throw new ClassCastException();
 			} else {
+				throw new ClassCastException();
 			}
 		}
 		return new ArrayList<>(outArgs.values());
@@ -432,7 +423,7 @@ public class CommandManager {
 							args.add((Argument<?>) object);
 							if (commandExecutors.get(command).parse(entity, args)) {
 								if (i > 0){
-									CommandExecutor executor = (CommandExecutor) commandExecutors.get(command);
+									CommandExecutor executor = commandExecutors.get(command);
 									Map<Integer, Object> map = executor.getArguments();
 									if (map.get(i-1) instanceof List<?>){
 										for (Object objectSuper : (List<?>) map.get(i-1)){

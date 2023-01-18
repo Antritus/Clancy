@@ -4,6 +4,7 @@ import com.qntcore.clancy.IPermission;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public interface Permissionable extends Entity {
 	/**
 	 * @param permission the permission to check for
@@ -36,28 +37,28 @@ public interface Permissionable extends Entity {
 	void deletePermissions();
 
 	/**
-	 * Adds permission to entitys permissions
+	 * Adds permission to entity's permissions
 	 * @param permission permission to give
 	 * @see IPermission
 	 * @see Entity
 	 */
 	void addPermission(IPermission permission);
 	/**
-	 * Adds permission to entitys permissions
+	 * Adds permission to entity's permissions
 	 * @param permission permission to give
 	 * @see IPermission
 	 * @see Entity
 	 */
 	void addPermission(String permission);
 	/**
-	 * Removes permission to entitys permissions
+	 * Removes permission to entity's permissions
 	 * @param permission permission to give
 	 * @see IPermission
 	 * @see Entity
 	 */
 	void removePermission(IPermission permission);
 	/**
-	 * Removes permission to entitys permissions
+	 * Removes permission to entity's permissions
 	 * @param permission permission to give
 	 * @see IPermission
 	 * @see Entity
