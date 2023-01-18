@@ -9,6 +9,10 @@ public class QntKey {
 		this.name = name;
 	}
 
+	@Override
+	public String toString(){
+		return key+":"+name;
+	}
 	public String getKey() {
 		return key;
 	}

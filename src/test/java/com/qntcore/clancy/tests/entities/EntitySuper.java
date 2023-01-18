@@ -1,4 +1,6 @@
-package com.qntcore.clancy.entity;
+package com.qntcore.clancy.tests.entities;
+
+import com.qntcore.clancy.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -138,9 +138,6 @@ public class CommandManager {
 			throw new CommandNotFoundException((QntKey) null);
 		}
 		CommandExecutor commandExecutor = commandExecutors.get(command);
-		if (!commandExecutor.parse(entity, args)) {
-			return;
-		}
 		commandExecutor.trigger(entity, command.name(), args);
 	}
 
@@ -205,17 +202,45 @@ public class CommandManager {
 
 
 	public @Nullable Command parseCommand(@NotNull String command) {
+		return parseCommand(command, false);
+	}
+	public @Nullable Command parseCommand(@NotNull String command, boolean ignorePrefix) {
 		List<Command> commands = new ArrayList<>();
 		for (Command cmd : commands()) {
 			String prefix = cmd.prefix();
-			if (!command.startsWith(prefix)) {
-				continue;
+			if (!ignorePrefix){
+				if (!command.startsWith(prefix)) {
+					continue;
+				}
+			}else {
+				if (!command.startsWith(prefix)) {
+					prefix = "";
+				}
+				else {
+					if (command.equalsIgnoreCase(cmd.prefix()+cmd.key()+":"+cmd.name())){
+						return cmd;
+					}
+					if (command.equalsIgnoreCase(cmd.prefix()+cmd.name())){
+						return cmd;
+					}
+					continue;
+				}
 			}
 			// /qntcore:command
 			// /command
 			String command2 = cmd.prefix() + cmd.key() + ":" + cmd.name();
+			if (ignorePrefix){
+				if (!command.startsWith(cmd.prefix())){
+					command2 =cmd.key() + ":" + cmd.name();
+				}
+			}
 			if (!command.equalsIgnoreCase(command2)) {
 				command2 = cmd.prefix() + cmd.name();
+				if (ignorePrefix){
+					if (!command.startsWith(cmd.prefix())){
+						command2 = cmd.name();
+					}
+				}
 				if (!command.equalsIgnoreCase(command2)) {
 					continue;
 				}
@@ -235,13 +260,18 @@ public class CommandManager {
 	}
 
 	public List<Argument<?>> parseArgument(Entity entity, Command command, List<String> inArgs) throws ArgumentParseException {
-		CommandArguments commandArguments = commandExecutors.get(command);
+		ICommandArgument commandArguments = commandExecutors.get(command);
 		HashMap<Integer, Argument<?>> outArgs = new HashMap<>();
 		for (int i = 0; i < inArgs.size(); i++) {
 			if (i > 0){
 				outArgs.putIfAbsent(i - 1, null);
 			}
-			if (commandArguments.getArguments().get(i) instanceof Map<?, ?>){
+			if (commandArguments.getArguments().get(i) == null){
+				if (commandExecutors.get(command).hasUnlimitedArguments()){
+					outArgs.put(i, parseArgument(entity, command, outArgs, i, inArgs.get(i), commandArguments.getArguments().get(i)));
+				}
+			}
+			else if (commandArguments.getArguments().get(i) instanceof Map<?, ?>){
 				for (Object key : ((Map<?, ?>) commandArguments.getArguments().get(i)).keySet()){
 					outArgs.put(i, parseArgument(entity, command, outArgs, i, inArgs.get(i), ((Map<?, ?>) commandArguments.getArguments().get(i)).get(key)));
 					if (outArgs.get(i) == null){
@@ -262,7 +292,9 @@ public class CommandManager {
 				if (outArgs.get(i) == null){
 					continue;
 				}
+				break;
 			} else if (commandArguments.getArguments().get(i) instanceof Argument<?>){
+				throw new ClassCastException();
 			} else {
 			}
 		}
@@ -289,7 +321,7 @@ public class CommandManager {
 							if (commandExecutors.get(command).parse(entity, args)) {
 								if (i > 0){
 									CommandExecutor executor = (CommandExecutor) commandExecutors.get(command);
-									HashMap<Integer, Object> map = executor.getArguments();
+									Map<Integer, Object> map = executor.getArguments();
 									if (map.get(i-1) instanceof List<?>){
 										for (Object objectSuper : (List<?>) map.get(i-1)){
 											if (objectSuper instanceof Class<?>){

@@ -1,9 +1,8 @@
 package com.qntcore.clancy;
+import java.util.Map;
 
-import java.util.HashMap;
-
-public interface CommandArguments {
-	HashMap<Integer, Object> getArguments();
+public interface ICommandArgument {
+	Map<Integer, Object> getArguments();
 	/*
 	List
 	 * Integer

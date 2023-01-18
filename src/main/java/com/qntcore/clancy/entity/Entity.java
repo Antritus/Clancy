@@ -1,12 +1,10 @@
 package com.qntcore.clancy.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public interface Entity {
+public interface Entity extends Permissionable{
 	void sendMessage(String message);
 	String getName();
 
 	String parseFromString(String string);
 	String toString();
+
 }

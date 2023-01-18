@@ -1,9 +1,9 @@
-package com.qntcore.clancy.arguments.custom;
+package com.qntcore.clancy.tests.arguments;
 
 import com.qntcore.clancy.arguments.Argument;
 import com.qntcore.clancy.arguments.CommandArgument;
 import com.qntcore.clancy.entity.Entity;
-import com.qntcore.clancy.entity.EntitySuper;
+import com.qntcore.clancy.tests.entities.EntitySuper;
 
 @CommandArgument(isCustom = true)
 public class ArgumentEntity extends Argument<Entity> {

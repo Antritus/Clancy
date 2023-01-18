@@ -1,26 +1,24 @@
-package commands.arguments;
+package com.qntcore.clancy.tests.commands;
 
 import com.qntcore.clancy.Command;
 import com.qntcore.clancy.SimpleCommand;
 import com.qntcore.clancy.arguments.Argument;
 import com.qntcore.clancy.arguments.ArgumentInteger;
 import com.qntcore.clancy.arguments.ArgumentString;
-import com.qntcore.clancy.arguments.custom.ArgumentEntity;
+import com.qntcore.clancy.tests.arguments.ArgumentEntity;
 import com.qntcore.clancy.entity.Entity;
 
 import java.util.ArrayList;
 
 import java.util.List;
 
-@Command(key = "qntcore", name="debug", prefix = "")
+@Command(key = "qntcore", name="test", category = "random", usage = "<entity> [integer|entity] [entity|string]")
 public class ArgumentCommand extends SimpleCommand {
 	public ArgumentCommand(){
+		super();
 		List<Object> newArgs = new ArrayList<>();
-//		newArgs.add(ArgumentInteger.class);
 		newArgs.add(ArgumentEntity.class);
 		getArguments().put(0, newArgs);
-//		newArgs = new ArrayList<>();
-//		newArgs.add(ArgumentInteger.class);
 		getArguments().put(1, ArgumentInteger.class);
 		newArgs = new ArrayList<>();
 		newArgs.add(ArgumentEntity.class);
@@ -49,8 +47,6 @@ public class ArgumentCommand extends SimpleCommand {
 					}
 				}
 			}
-		} else {
-			System.out.println(args.get(0));
 		}
 		return false;
 	}
@@ -58,5 +54,15 @@ public class ArgumentCommand extends SimpleCommand {
 	@Override
 	public void trigger(Entity entity, String name, List<Argument<?>> arguments) {
 		System.out.println("Idk do something!");
+	}
+
+	@Override
+	public boolean hasUnlimitedArguments() {
+		return false;
+	}
+
+	@Override
+	public Class<?> getUnlimitedArguments() {
+		return null;
 	}
 }
